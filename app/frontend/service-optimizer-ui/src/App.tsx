@@ -4,13 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 import { fetchServices, analyzeService } from './api';
-import { Service, ServiceResponse, FilterThresholds, SimulationParams } from './types';
+import { Service, ServiceClassification, FilterThresholds, SimulationParams } from './types';
 import { ChatBox } from './components/chat/ChatBox';
 
 function App() {
   const [services, setServices] = useState<Service[]>([]);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [aiAnalysis, setAiAnalysis] = useState<ServiceResponse | null>(null);
+  const [aiAnalysis, setAiAnalysis] = useState<ServiceClassification | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [simulationParams, setSimulationParams] = useState<SimulationParams>({
     newFixedCosts: 0,
@@ -269,8 +269,8 @@ function App() {
                           <div className="flex items-center justify-between mb-4">
                             <h4 className="text-sm font-semibold text-[#2B2B2B]">AI Insights & Recommendations</h4>
                             <div className={`px-2 py-1 rounded text-xs font-medium ${
-                              aiAnalysis.category === 'Profitable' ? 'bg-green-100 text-green-800' :
-                              aiAnalysis.category === 'Optimization' ? 'bg-yellow-100 text-yellow-800' :
+                              aiAnalysis.market_insights.market_position === 'Premium' ? 'bg-green-100 text-green-800' :
+                              aiAnalysis.market_insights.market_position === 'Standard' ? 'bg-yellow-100 text-yellow-800' :
                               'bg-red-100 text-red-800'
                             }`}>
                               {aiAnalysis.market_insights.market_position} Position
@@ -286,7 +286,7 @@ function App() {
                               <div>
                                 <h5 className="text-sm font-medium text-gray-900">Performance Analysis</h5>
                                 <p className="text-sm text-gray-600">
-                                  Confidence Score: {(aiAnalysis.confidence_score * 100).toFixed(1)}%
+                                  Confidence Score: {aiAnalysis.confidence_score.toFixed(1)}%
                                 </p>
                                 <p className="text-sm text-gray-600">
                                   Profit Trend: {aiAnalysis.market_insights.profit_trend}

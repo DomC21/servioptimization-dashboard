@@ -43,11 +43,16 @@ export interface FilterThresholds {
   unprofitableMax: number;
 }
 
-export interface ServiceResponse {
-  id: string;
-  name: string;
-  description: string;
+export interface ServiceClassification {
+  service_id: string;
   category: string;
-  metrics: ServiceMetrics;
-  performance: ServicePerformance;
+  confidence_score: number;
+  optimization_suggestions: string[];
+  market_insights: {
+    market_position: string;
+    scaling_recommended: boolean;
+    discontinuation_recommended: boolean;
+    revenue_per_use: number;
+    profit_trend: string;
+  };
 }

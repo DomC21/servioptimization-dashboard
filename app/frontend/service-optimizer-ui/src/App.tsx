@@ -23,6 +23,23 @@ function App() {
     optimizationMin: 20,
     unprofitableMax: 20
   });
+  
+  // Debounced threshold update
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateThresholds(filterThresholds).catch(error => {
+        console.error('Failed to update thresholds:', error);
+        // Reset to previous valid values if update fails
+        setFilterThresholds({
+          profitableMin: 40,
+          optimizationMin: 20,
+          unprofitableMax: 20
+        });
+      });
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [filterThresholds]);
 
   useEffect(() => {
     fetchServices().then(setServices).catch(console.error);
@@ -74,10 +91,15 @@ function App() {
                   type="number"
                   className="w-full p-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45B6B0] focus:border-transparent"
                   value={filterThresholds.profitableMin}
-                  onChange={(e) => setFilterThresholds({
-                    ...filterThresholds,
-                    profitableMin: parseFloat(e.target.value)
-                  })}
+                  onChange={(e) => {
+                    const newValue = parseFloat(e.target.value);
+                    if (newValue >= filterThresholds.optimizationMin && newValue <= 100) {
+                      setFilterThresholds({
+                        ...filterThresholds,
+                        profitableMin: newValue
+                      });
+                    }
+                  }}
                 />
               </div>
               <div>
@@ -86,10 +108,15 @@ function App() {
                   type="number"
                   className="w-full p-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45B6B0] focus:border-transparent"
                   value={filterThresholds.optimizationMin}
-                  onChange={(e) => setFilterThresholds({
-                    ...filterThresholds,
-                    optimizationMin: parseFloat(e.target.value)
-                  })}
+                  onChange={(e) => {
+                    const newValue = parseFloat(e.target.value);
+                    if (newValue >= filterThresholds.unprofitableMax && newValue <= filterThresholds.profitableMin) {
+                      setFilterThresholds({
+                        ...filterThresholds,
+                        optimizationMin: newValue
+                      });
+                    }
+                  }}
                 />
               </div>
               <div>
@@ -98,10 +125,15 @@ function App() {
                   type="number"
                   className="w-full p-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#45B6B0] focus:border-transparent"
                   value={filterThresholds.unprofitableMax}
-                  onChange={(e) => setFilterThresholds({
-                    ...filterThresholds,
-                    unprofitableMax: parseFloat(e.target.value)
-                  })}
+                  onChange={(e) => {
+                    const newValue = parseFloat(e.target.value);
+                    if (newValue >= 0 && newValue <= filterThresholds.optimizationMin) {
+                      setFilterThresholds({
+                        ...filterThresholds,
+                        unprofitableMax: newValue
+                      });
+                    }
+                  }}
                 />
               </div>
             </div>

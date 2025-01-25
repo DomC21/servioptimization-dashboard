@@ -103,3 +103,20 @@ async def create_service(service: Service, db: Session = Depends(get_db)) -> Ser
     db.commit()
     db.refresh(db_service)
     return db_service
+
+@app.post("/api/thresholds")
+async def update_thresholds(thresholds: dict) -> dict:
+    """Update performance thresholds"""
+    try:
+        # Validate thresholds
+        if not all(k in thresholds for k in ['profitableMin', 'optimizationMin', 'unprofitableMax']):
+            raise HTTPException(status_code=400, detail="Missing required threshold values")
+            
+        if not (0 <= thresholds['unprofitableMax'] <= thresholds['optimizationMin'] <= thresholds['profitableMin'] <= 100):
+            raise HTTPException(status_code=400, detail="Invalid threshold values")
+            
+        # In a real application, we would store these in the database
+        # For now, we'll just return the validated thresholds
+        return thresholds
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -43,3 +43,16 @@ export async function createService(service: any) {
   }
   return response.json();
 }
+
+export async function updateThresholds(thresholds: FilterThresholds): Promise<void> {
+  const response = await fetch(`${API_URL}/api/thresholds`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(thresholds),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update thresholds');
+  }
+}
